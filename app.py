@@ -172,14 +172,16 @@ if uploaded_files:
             # Add Pie Chart
             pdf.add_page()
 
-            title_map = {
-                "Friends": "The One With the Predictions",
-                "The Big Bang Theory": "The Predictive Entanglement",
-                "The Office": "That's What the Model Said"
-            }
-
             pdf.set_font("Helvetica", size=14)
-            pdf.cell(200, 10, title_map[sitcom], ln=True, align='C')
+            if sitcom_mode:
+                title_map = {
+                    "Friends": "The One With the Predictions",
+                    "The Big Bang Theory": "The Predictive Entanglement",
+                    "The Office": "That's What the Model Said"
+                }
+                pdf.cell(200, 10, title_map[sitcom], ln=True, align='C')
+            else:
+                pdf.cell(200, 10, "CrackGuard Prediction Report", ln=True, align='C')
             pdf.set_font("Helvetica", size=10)
             pdf.cell(200, 10, f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True)
             pdf.image(pie_path, x=10, y=30, w=180)
@@ -194,8 +196,9 @@ if uploaded_files:
                         pdf.cell(200, 10, f"Image: {name}", ln=True)
                         pdf.cell(200, 10, f"Prediction: {label}", ln=True)
                         
-                        clean_quote = strip_emojis(reaction_quotes[label][sitcom])
-                        pdf.multi_cell(0, 10, f"Sitcom Quote: {clean_quote}")
+                        if sitcom_mode:
+                            clean_quote = strip_emojis(reaction_quotes[label][sitcom])
+                            pdf.multi_cell(0, 10, f"Sitcom Quote: {clean_quote}")
 
                         pdf.image(tmpfile.name, x=10, y=50, w=80)
                 finally:
@@ -214,6 +217,6 @@ if uploaded_files:
                 mime="application/pdf"
             )
 
-        # Clean up pie chart image
+    # Clean up pie chart image
     if os.path.exists(pie_path):
         os.remove(pie_path)
